@@ -10,11 +10,13 @@ import subprocess as sp
 parser = ap.ArgumentParser()
 
 parser.add_argument("mode", 
-    help="select the mode: either \"ustruct\", \"header\", \"source\" or \"build\".")
+    help="select the mode: either \"ustruct\", \"uobject\", \"header\", \"source\" or \"build\".")
 parser.add_argument("file_target", default="", nargs="?",
     help="This is the location in the source tree where the generated files will reside.")
 parser.add_argument("--names", default=None, nargs="+", 
-    help="List of names to generate. Will be UStruct names if mode == \"ustruct\", otherwise filenames.")
+    help="List of names to generate. Will be UStruct/UObject names if mode == \"ustruct\" or \"uobject\", otherwise filenames.")
+parser.add_argument("--parent", default="", 
+    help="UObject parent class, must be the C++ class name.")
 
 parser.add_argument("--plugin", 
     help="Optional plugin (assumed to be in <directory>/Plugins) to target instead of the default project.")
@@ -30,9 +32,11 @@ if not args.names and args.mode != "build":
     raise Exception(f"Only \"build\" mode allows no file names to be specified (actual mode: {args.mode})")
 
 engine = None
+prebuilt = True
 with open(str(cfg_file), 'r') as json_file:
     config = json.load(json_file)
     engine = config["engine"]
+    prebuilt = config["prebuilt"]
 
 # find the project in the current directory
 solutions = glob.glob("*.sln")
@@ -52,7 +56,7 @@ py = sys.executable
 main = str(pl.Path(os.path.dirname(sys.argv[0])) / "src" / "main.py")
 
 # construct call to main tool
-call = [ py, main, os.getcwd(), "--project", project_name, "--file-root", args.file_target, "--engine", engine, "--mode", args.mode, "--names" ]
+call = [ py, main, os.getcwd(), "--project", project_name, "--file-root", args.file_target, "--engine", engine, "--mode", args.mode, "--parent", args.parent, "--names" ]
 if args.names:
     call.extend(args.names)
 else:

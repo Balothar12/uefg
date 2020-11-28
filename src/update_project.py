@@ -10,9 +10,12 @@ def update_project(config: cfg.Configuration):
     os.chdir(config.dir)
 
     # generate project files
-    sp.call([
-        str(cfg.build_script(config)), "-ProjectFiles", "UsePrecompiled", "-2019", str(cfg.uproject(config)), "-Game"#, "-Engine"
-    ])
+    build_script_args = [
+        str(cfg.build_script(config)), "-ProjectFiles", "UsePrecompiled", "-2019", str(cfg.uproject(config)), "-Game"
+    ]
+    if(config.source_build):
+        build_script_args.append("Engine")
+    sp.call(build_script_args)
 
     # build the project
     sp_call = [

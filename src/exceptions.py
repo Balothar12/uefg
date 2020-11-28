@@ -35,4 +35,4 @@ class InvalidFileType(Exception):
 
     def __init__(self, specified_type):
 
-        self.message = f"Only \"ustruct\", \"header\", \"source\" or \"build\" may be specified as generation modes (actual value: {specified_type})."
+        self.message = f"Only \"ustruct\", \"uobject\", \"header\", \"source\" or \"build\" may be specified as generation modes (actual value: {specified_type})."

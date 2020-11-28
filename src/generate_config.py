@@ -10,6 +10,7 @@ class GenerationMode(Enum):
     HEADER = 2
     SOURCE = 3
     BUILD = 4
+    UOBJECT = 5
 
 class Configuration:
 
@@ -24,6 +25,8 @@ class Configuration:
         self.file_root      = ""
         self.module         = ""
         self.engine_root    = ""
+        self.source_build   = False
+        self.uobject_parent = ""
 
         self.mode = GenerationMode.USTRUCT
 
@@ -43,10 +46,16 @@ def generate_config():
         help="List of UStruct names to generate (these are the names without the 'F' prefix).")
     parser.add_argument("--file-root",      action="store", type=str, required=True,    dest="file_root",
         help="Location of the UStruct in the source tree (i.e. below Source/<Module>/[Private, Public])")
-    parser.add_argument("--module",         action="store", type=str,                   dest="module",
+    parser.add_argument("--module",         action="store", type=str, required=False,   dest="module",  default="",
         help="Module to add the ustruct to (path below Source: Source/<Module>/...)")
+
     parser.add_argument("--engine",         action="store", type=str, required=True,    dest="engine",
         help="Root folder of the engine to use")
+    parser.add_argument("--prebuilt",         action="store_true",                      dest="prebuilt",
+        help="Is the engine the launcher version (prebuilt) or a source build")
+
+    parser.add_argument("--parent",         action="store", type=str,                   dest="parent",
+        help="Parent class for UObjects.")
 
     parser.add_argument("--mode",           action="store", type=str,                   dest="mode",    default="ustruct")
 
@@ -77,6 +86,9 @@ def generate_config():
             config.module = config.project
 
     config.engine_root = arguments.engine
+    config.source_build = not arguments.prebuilt
+
+    config.uobject_parent = arguments.parent
 
     # check mode
     if arguments.mode == "ustruct":
@@ -87,6 +99,10 @@ def generate_config():
         config.mode = GenerationMode.SOURCE
     elif arguments.mode == "build":
         config.mode = GenerationMode.BUILD
+    elif arguments.mode == "uobject":
+        config.mode = GenerationMode.UOBJECT
+        if(len(config.uobject_parent) == 0):
+            raise exc.InvalidConfig("UObject parent may not be empty for mode \"uobject\"")
     else:
         raise exc.InvalidFileType(arguments.mode)
 
