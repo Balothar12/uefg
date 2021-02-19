@@ -30,6 +30,8 @@ class Configuration:
 
         self.mode = GenerationMode.USTRUCT
 
+        self.update = True
+
 def generate_config():
 
     parser = ap.ArgumentParser()
@@ -58,6 +60,8 @@ def generate_config():
         help="Parent class for UObjects.")
 
     parser.add_argument("--mode",           action="store", type=str,                   dest="mode",    default="ustruct")
+
+    parser.add_argument("--no-update",      action="store_true",                        dest="no_update")
 
     arguments = parser.parse_args()
 
@@ -105,6 +109,9 @@ def generate_config():
             raise exc.InvalidConfig("UObject parent may not be empty for mode \"uobject\"")
     else:
         raise exc.InvalidFileType(arguments.mode)
+    
+    if(hasattr(arguments, "no_update")):
+        config.update = not arguments.no_update
 
     return config
 

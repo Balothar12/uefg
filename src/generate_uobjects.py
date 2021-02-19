@@ -3,6 +3,7 @@ import pathlib as pl
 import os
 import generate_config as cfg
 import exceptions as exc
+from  uobject_parent_map import UObjectParentMap as uobjmap
 
 def generate_uobjects(config: cfg.Configuration):
 
@@ -31,9 +32,9 @@ def generate_uobjects(config: cfg.Configuration):
         api_macro = config.plugin_name.upper()
     api_macro += "_API"
 
-    # unfortunately we cannot know the parent class include for anything but AActor, 
-    # so we just leave it out in all other cases 
-    parent_include = ""
+    # get the include from the map (if known)
+    include_map = uobjmap(config.uobject_parent)
+    parent_include = include_map.include
 
     # create ustruct files
     already_present = []
@@ -79,9 +80,6 @@ def generate_uobjects(config: cfg.Configuration):
                 "    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.\n",
                 "    PrimaryActorTick.bCanEverTick = true;\n",
             ]
-
-            # for actors we know the include path
-            parent_include = "#include \"GameFramework/Actor.h\"\n"
 
         header = headers / f"{uobject}.h"
         source = sources / f"{uobject}.cpp"

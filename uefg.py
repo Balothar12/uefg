@@ -20,6 +20,9 @@ parser.add_argument("--parent", default="",
 
 parser.add_argument("--plugin", 
     help="Optional plugin (assumed to be in <directory>/Plugins) to target instead of the default project.")
+    
+parser.add_argument("--noup", action='store_true', default=False,
+    help="Disable updating the project (i.e. generate project files + build)")
 
 args = parser.parse_args()
 
@@ -56,7 +59,13 @@ py = sys.executable
 main = str(pl.Path(os.path.dirname(sys.argv[0])) / "src" / "main.py")
 
 # construct call to main tool
-call = [ py, main, os.getcwd(), "--project", project_name, "--file-root", args.file_target, "--engine", engine, "--mode", args.mode, "--parent", args.parent, "--names" ]
+call = [ py, main, os.getcwd(), "--project", project_name, "--file-root", args.file_target, "--engine", engine, "--mode", args.mode, "--parent", args.parent ] 
+
+if args.noup:
+    call.extend([ "--no-update" ])
+
+call.extend([ "--names" ])
+
 if args.names:
     call.extend(args.names)
 else:

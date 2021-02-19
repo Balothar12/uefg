@@ -25,4 +25,5 @@ if __name__ == "__main__":
         gen_generic.generate_source(config)
 
     # build the project
-    build.update_project(config)
+    if config.update:
+        build.update_project(config)
