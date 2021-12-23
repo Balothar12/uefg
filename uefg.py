@@ -41,6 +41,11 @@ with open(str(cfg_file), 'r') as json_file:
     engine = config["engine"]
     prebuilt = config["prebuilt"]
 
+    if "objmap" in config:
+        uobj_include_map = config["objmap"]
+    else:
+        uobj_include_map = None
+
 # find the project in the current directory
 solutions = glob.glob("*.sln")
 if len(solutions) != 1:
@@ -73,5 +78,8 @@ else:
 
 if args.plugin:
     call.extend([ "--plugin", args.plugin ])
+
+if uobj_include_map:
+    call.extend([ "--uobjmap", json.dumps(uobj_include_map)])
 
 sp.call(call)

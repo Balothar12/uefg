@@ -33,7 +33,7 @@ def generate_uobjects(config: cfg.Configuration):
     api_macro += "_API"
 
     # get the include from the map (if known)
-    include_map = uobjmap(config.uobject_parent)
+    include_map = uobjmap(config.uobject_parent, config.uobjmap)
     parent_include = include_map.include
 
     # create ustruct files

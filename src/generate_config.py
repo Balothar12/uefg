@@ -1,4 +1,5 @@
 
+import json
 import pathlib as pl
 import argparse as ap
 import exceptions as exc
@@ -27,6 +28,7 @@ class Configuration:
         self.engine_root    = ""
         self.source_build   = False
         self.uobject_parent = ""
+        self.uobjmap        = None
 
         self.mode = GenerationMode.USTRUCT
 
@@ -63,6 +65,8 @@ def generate_config():
 
     parser.add_argument("--no-update",      action="store_true",                        dest="no_update")
 
+    parser.add_argument("--uobjmap",        action="store", type=str,                   dest="objmap",  default="")
+
     arguments = parser.parse_args()
 
     config = Configuration()
@@ -93,6 +97,9 @@ def generate_config():
     config.source_build = not arguments.prebuilt
 
     config.uobject_parent = arguments.parent
+
+    if arguments.objmap != "":
+        config.uobjmap = json.loads(arguments.objmap)
 
     # check mode
     if arguments.mode == "ustruct":
